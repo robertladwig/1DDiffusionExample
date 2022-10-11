@@ -13,10 +13,11 @@ dt = 1 # our time step, unit: s
 
 for (n in 2:ncol(conc)){ # time index
   for (i in 2:(nrow(conc)-1)){ # space index
-    conc[i, n] = conc[i, n-1] + K * dt / dx**2 * (conc[i+1, n-1] - 2 * conc[i, n-1] - conc[i-1, n-1]) # our FTCS schema
+    conc[i, n] = conc[i, n-1] + K * dt / dx**2 * (conc[i+1, n-1] - 2 * conc[i, n-1] + conc[i-1, n-1]) # our FTCS schema
   }
 }
 
+ 
 time =  paste0(seq(1,ncol(conc)))
 df <- data.frame(cbind(time, t(conc)) )
 colnames(df) <- c("time", as.character(paste0(seq(1,nrow(conc)))))
@@ -24,10 +25,9 @@ m.df <- reshape2::melt(df, "time")
 m.df$time <- time
  
 ggplot(m.df, aes(as.numeric(time), as.numeric(variable))) +
-  geom_raster(aes(fill = as.numeric(value)), interpolate = TRUE) +
-  scale_fill_gradientn(limits = c(0,100),
-                       colours = rev(RColorBrewer::brewer.pal(11, 'Spectral')))+
-  theme_minimal()  +xlab('Time') +
-  ylab('Depth') +
-  labs(fill = 'Conc. [%]')
- 
+ geom_raster(aes(fill = as.numeric(value)), interpolate = TRUE) +
+ scale_fill_gradientn(limits = c(-1,100),
+                      colours = rev(RColorBrewer::brewer.pal(11, 'Spectral')))+
+theme_minimal()  +xlab('Time') +
+ylab('Depth') +
+labs(fill = 'Conc. [%]')
